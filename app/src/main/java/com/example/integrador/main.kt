@@ -33,11 +33,6 @@ fun main() {
     println("---------------------")
     parking.listVehicles()
 
-//    val vcalcularValor = Parking.Parkeable(car)
-//
-//    val precio: Int =
-//        vcalcularValor.calcularCosto()
-//    println(precio)
 
 }
 

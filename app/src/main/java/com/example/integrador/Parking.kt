@@ -98,8 +98,21 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
         vehicles.remove(element)
         val pago = Parkeable(element).calcularCosto()
 
-        println("el precio a pagar es :$pago  del vehiculos: ${element.plate} ")
+        println("el precio a pagar es $:$pago  del vehiculos: ${element.plate} ")
 
+    }
+
+//    val TotalProfit: Int
+//        get() = field
+//        set(value) {
+//
+//        }
+
+    fun getProfit(pago: Int, contador: Int): Pair<Int, Int> {
+
+        val totalProfit = +pago
+        val contador = +contador
+        return Pair(contador, pago)
     }
 }
 
