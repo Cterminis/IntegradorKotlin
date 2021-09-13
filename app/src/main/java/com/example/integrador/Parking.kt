@@ -11,20 +11,20 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
     data class Parkeable(val vehicle: Vehicle) {
         // en teoria esta clase deberia usar el  checkin y check out del vehivulo
 
-        val dosHoras = 120L//
-        val tiempoFicticio = 135 //min
+        val dosHoras = 120//
+        val tiempoFicticio = 136 //min
 
         fun calcularCosto(): Int {
             // calcular tiempo de salida si excede las 2 horas
-//            val excede=vehicle.parkedTime<dosHoras
-            val excede=tiempoFicticio<dosHoras
+
+            val excede = tiempoFicticio < dosHoras
 
             val estadiaEnMin = ((tiempoFicticio - dosHoras))
-//            val estadiaEnMin = ((tiempoFicticio - vehicle.parkedTime))
-            //calcular bloques
-            val bloques = kotlin.math.ceil((estadiaEnMin/ 15).toDouble()).toInt()
 
-            println("tiempo en minutos $tiempoFicticio")
+            //calcular bloques
+            val bloques = if ((estadiaEnMin % 15)!=0) estadiaEnMin / 15 +1 else estadiaEnMin / 15
+
+            println("tiempo de estadia : $tiempoFicticio")
 
             val total = bloques * 5 + vehicle.type.tarifa
             // println(" el precio a pagar es: $${bloques * 5 + vehicle.type.tarifa} ")
@@ -35,7 +35,8 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
                 null -> if (excede) vehicle.type.tarifa else total
 
                 // tiene decuento
-                else -> if (excede) vehicle.type.tarifa.calcularDescuento(15) else total.calcularDescuento(15)
+                else -> if (excede) vehicle.type.tarifa.calcularDescuento(15) else total.calcularDescuento(
+                    15)
             }
 
         }
@@ -55,7 +56,7 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
         // acumular ganacias
         fun totalProfit(cantidad: Int, valor: Int, ganancias: Pair<Int, Int>): Pair<Int, Int> {
 
-            val totalPair = Pair(ganancias.first+cantidad, ganancias.second+valor)
+            val totalPair = Pair(ganancias.first + cantidad, ganancias.second + valor)
 
             return totalPair
         }
@@ -98,7 +99,7 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
         Parkeable(element).chekOutVehicle(element.plate)
         vehicles.remove(element)
         val pago = Parkeable(element).calcularCosto()
-        this.ganancias = Parkeable(element).totalProfit(1, pago,ganancias)
+        this.ganancias = Parkeable(element).totalProfit(1, pago, ganancias)
         println("el precio a pagar es: $$pago  del vehiculos: ${element.plate} ")
 
     }
