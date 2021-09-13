@@ -11,31 +11,31 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
     data class Parkeable(val vehicle: Vehicle) {
         // en teoria esta clase deberia usar el  checkin y check out del vehivulo
 
-        val dosHoras = 7200L// segundos
+        val dosHoras = 7200000L// en milis
         val tiempoFicticio = 1631701107187L
 
         fun calcularCosto(): Int {
             // calcular tiempo de salida si excede las 2 horas
 
-            println(vehicle.checkInTime.timeInMillis)
-
             // costo base + $5 por cada 15 min o fraccion 1seg..15min
-            val minutos = ((tiempoFicticio - vehicle.checkInTime.timeInMillis) / 60000)
-            val bloques = kotlin.math.ceil((minutos / 15).toDouble()).toInt()
+            val estadiaFicticiaEnMin = ((tiempoFicticio - vehicle.checkInTime.timeInMillis) / 60000)
+            //calcular bloques
+            val bloques = kotlin.math.ceil((estadiaFicticiaEnMin / 15).toDouble()).toInt()
 
-            println(minutos)
-            println(bloques)
-            println("${bloques * 5 + vehicle.type.tarifa} ")
+            println("tiempo en minutos $estadiaFicticiaEnMin")
+            println("bloques $bloques")
+            val total = bloques * 5 + vehicle.type.tarifa
+            // println(" el precio a pagar es: $${bloques * 5 + vehicle.type.tarifa} ")
 
             return when (vehicle.discountCard) {
                 //tipo de vehiculo
                 // hora de salida --> cuando lo elimino
                 //hora de entrada
 
-                null -> vehicle.type.tarifa * vehicle.checkInTime.timeInMillis.toInt()
+                null -> if ((tiempoFicticio - vehicle.checkInTime.timeInMillis) <= dosHoras) vehicle.type.tarifa else total
 
                 //esto es si e tiempo es menor a 2h y tiene decuento
-                else -> vehicle.type.tarifa.calcularDescuento(15)
+                else -> total.calcularDescuento(15)
             }
 
         }
@@ -61,7 +61,7 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
         }
 
         fun String.onSuccess() {
-            println("plate : $this")
+            println("onSucces plate : $this")
         }
 
         fun onError() {
@@ -98,7 +98,7 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
         vehicles.remove(element)
         val pago = Parkeable(element).calcularCosto()
 
-        println("el costo es :$pago  del vehiculos: ${element.plate} ")
+        println("el precio a pagar es :$pago  del vehiculos: ${element.plate} ")
 
     }
 }
