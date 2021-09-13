@@ -1,5 +1,7 @@
 package com.example.integrador
 
+import java.util.*
+
 
 data class Parking(val vehicles: MutableSet<Vehicle>) {
 
@@ -9,31 +11,31 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
     data class Parkeable(val vehicle: Vehicle) {
         // en teoria esta clase deberia usar el  checkin y check out del vehivulo
 
-        val dosHoras = 7200000L// en milis
-        val tiempoFicticio = 1631701107187L
+        val dosHoras = 120L//
+        val tiempoFicticio = 135 //min
 
         fun calcularCosto(): Int {
             // calcular tiempo de salida si excede las 2 horas
+//            val excede=vehicle.parkedTime<dosHoras
+            val excede=tiempoFicticio<dosHoras
 
-            // costo base + $5 por cada 15 min o fraccion 1seg..15min
-            val estadiaFicticiaEnMin = ((tiempoFicticio - vehicle.checkInTime.timeInMillis) / 60000)
+            val estadiaEnMin = ((tiempoFicticio - dosHoras))
+//            val estadiaEnMin = ((tiempoFicticio - vehicle.parkedTime))
             //calcular bloques
-            val bloques = kotlin.math.ceil((estadiaFicticiaEnMin / 15).toDouble()).toInt()
+            val bloques = kotlin.math.ceil((estadiaEnMin/ 15).toDouble()).toInt()
 
-            println("tiempo en minutos $estadiaFicticiaEnMin")
-          //  println("bloques $bloques")
+            println("tiempo en minutos $tiempoFicticio")
+
             val total = bloques * 5 + vehicle.type.tarifa
             // println(" el precio a pagar es: $${bloques * 5 + vehicle.type.tarifa} ")
 
             return when (vehicle.discountCard) {
-                //tipo de vehiculo
-                // hora de salida --> cuando lo elimino
-                //hora de entrada
 
-                null -> if ((tiempoFicticio - vehicle.checkInTime.timeInMillis) <= dosHoras) vehicle.type.tarifa else total
+                //no tiene descuento
+                null -> if (excede) vehicle.type.tarifa else total
 
-                //esto es si e tiempo es menor a 2h y tiene decuento
-                else -> total.calcularDescuento(15)
+                // tiene decuento
+                else -> if (excede) vehicle.type.tarifa.calcularDescuento(15) else total.calcularDescuento(15)
             }
 
         }
@@ -97,7 +99,7 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
         vehicles.remove(element)
         val pago = Parkeable(element).calcularCosto()
         this.ganancias = Parkeable(element).totalProfit(1, pago,ganancias)
-        println("el precio a pagar es $:$pago  del vehiculos: ${element.plate} ")
+        println("el precio a pagar es: $$pago  del vehiculos: ${element.plate} ")
 
     }
 

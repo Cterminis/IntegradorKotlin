@@ -7,7 +7,7 @@ class Vehicle(val plate: String,
               val checkInTime: Calendar,
               val discountCard: String? = null
 ) {
-    val MINUTES_IN_MILISECONDS = 6000
+    val MINUTES_IN_MILISECONDS = 60000
     val parkedTime: Long
     get() =
         (Calendar.getInstance().timeInMillis - checkInTime.timeInMillis) / MINUTES_IN_MILISECONDS

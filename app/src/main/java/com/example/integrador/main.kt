@@ -26,6 +26,7 @@ fun main() {
     println("check out ${car.plate}")
     parking.remove(car)
     println("---------------------")
+    println(car.parkedTime)
     println("---------------------")
     parking.remove(car4)
     println("---------------------")
