@@ -1,12 +1,10 @@
 package com.example.integrador
 
-import java.lang.Math.ceil
-import java.util.*
-
 
 data class Parking(val vehicles: MutableSet<Vehicle>) {
 
     private val cupos = 20
+    var ganancias = Pair(0, 0)
 
     data class Parkeable(val vehicle: Vehicle) {
         // en teoria esta clase deberia usar el  checkin y check out del vehivulo
@@ -23,7 +21,7 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
             val bloques = kotlin.math.ceil((estadiaFicticiaEnMin / 15).toDouble()).toInt()
 
             println("tiempo en minutos $estadiaFicticiaEnMin")
-            println("bloques $bloques")
+          //  println("bloques $bloques")
             val total = bloques * 5 + vehicle.type.tarifa
             // println(" el precio a pagar es: $${bloques * 5 + vehicle.type.tarifa} ")
 
@@ -46,16 +44,16 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
 
         fun chekOutVehicle(plate: String) {
 
-            return when (plate.isBlank()) {
+            return when (!plate.isNullOrBlank()) {
                 true -> plate.onSuccess()
                 else -> onError()
             }
         }
 
         // acumular ganacias
-        fun totalProfit(cantidad: Int, valor: Int): Pair<Int, Int> {
+        fun totalProfit(cantidad: Int, valor: Int, ganancias: Pair<Int, Int>): Pair<Int, Int> {
 
-            val totalPair = Pair(cantidad, valor)
+            val totalPair = Pair(ganancias.first+cantidad, ganancias.second+valor)
 
             return totalPair
         }
@@ -95,24 +93,14 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
 
     fun remove(element: Vehicle) {
 
+        Parkeable(element).chekOutVehicle(element.plate)
         vehicles.remove(element)
         val pago = Parkeable(element).calcularCosto()
-
+        this.ganancias = Parkeable(element).totalProfit(1, pago,ganancias)
         println("el precio a pagar es $:$pago  del vehiculos: ${element.plate} ")
 
     }
 
-//    val TotalProfit: Int
-//        get() = field
-//        set(value) {
-//
-//        }
 
-    fun getProfit(pago: Int, contador: Int): Pair<Int, Int> {
-
-        val totalProfit = +pago
-        val contador = +contador
-        return Pair(contador, pago)
-    }
 }
 

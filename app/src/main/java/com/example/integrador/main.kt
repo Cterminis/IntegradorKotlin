@@ -9,6 +9,7 @@ import kotlin.math.round
 fun main() {
 
     val car = Vehicle("KK1111j", VehicleType.CAR, Calendar.getInstance(), "DISCOUNT_CARD_001")
+    val car4 = Vehicle("DD1111k", VehicleType.CAR, Calendar.getInstance())
     val parking = Parking(mutableSetOf(car))
 
     println("verificar si ingreso el vehiculo")
@@ -28,6 +29,12 @@ fun main() {
     println("---------------------")
     println("check out ${car.plate}")
     parking.remove(car)
+    println("---------------------")
+    println("---------------------")
+    parking.remove(car4)
+    println("---------------------")
+    println("Cantidad de vehiculos retirados ${parking.ganancias.first}")
+    println("Ganancias acumulada:$ ${parking.ganancias.second}")
     println("---------------------")
     println("imprimiendo lista")
     println("---------------------")
