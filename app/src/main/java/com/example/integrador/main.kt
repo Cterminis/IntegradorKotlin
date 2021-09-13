@@ -1,10 +1,6 @@
 package com.example.integrador
 
-import java.lang.Math.nextUp
 import java.util.*
-import kotlin.math.ceil
-import kotlin.math.nextUp
-import kotlin.math.round
 
 fun main() {
 
