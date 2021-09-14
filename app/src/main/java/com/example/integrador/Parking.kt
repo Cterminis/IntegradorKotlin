@@ -1,7 +1,5 @@
 package com.example.integrador
 
-import java.util.*
-
 
 data class Parking(val vehicles: MutableSet<Vehicle>) {
 
@@ -11,32 +9,32 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
     data class Parkeable(val vehicle: Vehicle) {
         // en teoria esta clase deberia usar el  checkin y check out del vehivulo
 
-        val dosHoras = 120//
-        val tiempoFicticio = 136 //min
+        private val dosHoras = 120//
+        private val tiempoFicticio = 136 //min
+        private val pay = 0
 
-        fun calcularCosto(): Int {
+        fun calculateFee(type: VehicleType, parkedTime: Int): Int {
+
+            val tarifaBase = type.tarifa
+            val hasDiscountCard = vehicle.discountCard
+
             // calcular tiempo de salida si excede las 2 horas
-
-            val excede = tiempoFicticio < dosHoras
-
+            val excedeTiempoBase = tiempoFicticio < dosHoras
             val estadiaEnMin = ((tiempoFicticio - dosHoras))
 
             //calcular bloques
-            val bloques = if ((estadiaEnMin % 15)!=0) estadiaEnMin / 15 +1 else estadiaEnMin / 15
-
-            println("tiempo de estadia : $tiempoFicticio")
-
-            val total = bloques * 5 + vehicle.type.tarifa
-            // println(" el precio a pagar es: $${bloques * 5 + vehicle.type.tarifa} ")
+            val bloques = if ((estadiaEnMin % 15) != 0) estadiaEnMin / 15 + 1 else estadiaEnMin / 15
+            //println("tiempo de estadia : $tiempoFicticio")
+            val pay = bloques * 5 + tarifaBase
 
             return when (vehicle.discountCard) {
 
                 //no tiene descuento
-                null -> if (excede) vehicle.type.tarifa else total
-
+                null -> if (excedeTiempoBase) tarifaBase else pay
                 // tiene decuento
-                else -> if (excede) vehicle.type.tarifa.calcularDescuento(15) else total.calcularDescuento(
-                    15)
+                else -> if (excedeTiempoBase) {
+                    (tarifaBase.calcularDescuento(15))
+                } else pay.calcularDescuento(15)
             }
 
         }
@@ -44,11 +42,17 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
         private fun Int.calcularDescuento(discount: Int): Int =
             if (discount == 0) 0 else this - (this * discount / 100)
 
-
         fun chekOutVehicle(plate: String) {
 
-            return when (!plate.isNullOrBlank()) {
-                true -> plate.onSuccess()
+            val payment1 = this.calculateFee(vehicle.type, vehicle.parkedTime.toInt())
+            println("Check-out $plate:")
+            fun onSuccess(payment: Int = payment1) =
+                println("Your fee is $payment. Come back soon.")
+
+            fun onError() = println("Sorry, the check-out failed")
+
+            return when (!plate.isNullOrBlank()) { // se puede cambiar por otra validacion importante
+                true -> onSuccess()
                 else -> onError()
             }
         }
@@ -60,47 +64,35 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
 
             return totalPair
         }
-
-        fun String.onSuccess() {
-            println("onSucces plate : $this")
-        }
-
-        fun onError() {
-            println("error")
-        }
     }
 
     //agrega vehiculos
     fun addVehicle(vehicle: Vehicle): Boolean {
 
         val hayCupos = this.vehicles.size < cupos
-        if (hayCupos) {
-            println("Welcome to AlterParking!")
-            this.vehicles.add(vehicle)
-        } else println("Sorry,the check-in failed")
+        if (hayCupos) this.vehicles.add(vehicle)
 
+//        else Parkeable(vehicle).onError()
         return hayCupos
     }
 
     //creo que no es necesaria
     fun checkIn(added: Boolean) =
-        if (added) println("Welcome to AlterParking!") else println("Sorry,the check-in failed")
-
+        if (added) println("Welcome to AlterParking!") else println("Sorry, the check-in failed")
 
     //lista los vehiculos del estacionamiento
-    fun listVehicles() {
-        vehicles.forEach {
-            println(it.plate)
-        }
-    }
+    fun listVehicles() = vehicles.forEach { println(it.plate) }
 
-    fun remove(element: Vehicle) {
 
-        Parkeable(element).chekOutVehicle(element.plate)
-        vehicles.remove(element)
-        val pago = Parkeable(element).calcularCosto()
-        this.ganancias = Parkeable(element).totalProfit(1, pago, ganancias)
-        println("el precio a pagar es: $$pago  del vehiculos: ${element.plate} ")
+    fun remove(vehicle: Vehicle) {
+
+        val retiro = Parkeable(vehicle)
+
+        vehicles.remove(vehicle)
+        val pago = retiro.calculateFee(vehicle.type, vehicle.parkedTime.toInt())
+        this.ganancias = retiro.totalProfit(1, pago, ganancias)
+        retiro.chekOutVehicle(vehicle.plate)
+
 
     }
 

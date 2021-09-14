@@ -21,12 +21,10 @@ fun main() {
 //    parking = Parking(completeParking())
     println("---------------------")
     println("ingresando 20 vehiculos")
-    completeParking().forEach { parking.addVehicle(it) }
+    completeParking().forEach { parking.checkIn(parking.addVehicle(it)) }
     println("---------------------")
-    println("check out ${car.plate}")
+//    println("check out ${car.plate}")
     parking.remove(car)
-    println("---------------------")
-    println(car.parkedTime)
     println("---------------------")
     parking.remove(car4)
     println("---------------------")
